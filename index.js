@@ -174,7 +174,7 @@ async function startAutoWeather() {
     });
 
     // 60 à 120 minutes
-    const delay = (60 + Math.floor(Math.random() * 61)) * 60 * 1000;
+    const delay = (120 + Math.floor(Math.random() * 61)) * 60 * 1000;
     setTimeout(sendWeather, delay);
   }
 
