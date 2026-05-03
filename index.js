@@ -26,78 +26,38 @@ const client = new Client({
 });
 
 
-// 🌴 MISS MÉTÉO DATA
+// 🌴 DATA MISS MÉTÉO
 const weatherData = {
   jour: {
     soleil: {
-      texts: [
-        "Un soleil éclatant illumine la ville aujourd’hui.",
-        "La journée s’annonce lumineuse sur San Euphoria.",
-        "Le ciel est parfaitement dégagé."
-      ],
-      tips: [
-        "Profitez-en pour organiser des scènes en extérieur.",
-        "Conditions parfaites pour RP en ville.",
-        "Idéal pour événements RP."
-      ],
+      texts: ["Un soleil éclatant illumine la ville.", "La journée est lumineuse.", "Le ciel est dégagé."],
+      tips: ["Parfait pour RP extérieur.", "Profitez de la ville.", "Ambiance dynamique."],
       img: "./images/soleil.jpg",
       color: "#FFD700"
     },
     pluie: {
-      texts: [
-        "Une pluie régulière s’installe sur la ville.",
-        "Les nuages dominent San Euphoria.",
-        "L’atmosphère devient plus lourde."
-      ],
-      tips: [
-        "Adaptez vos scènes RP.",
-        "Routes glissantes.",
-        "Ambiance plus calme."
-      ],
+      texts: ["Une pluie s’installe.", "Temps humide.", "Ambiance plus calme."],
+      tips: ["Routes glissantes.", "RP plus posé.", "Atmosphère réaliste."],
       img: "./images/pluie.jpg",
       color: "#4A90E2"
     },
     brouillard: {
-      texts: [
-        "Un brouillard dense recouvre la ville.",
-        "La visibilité est réduite.",
-        "Ambiance mystérieuse."
-      ],
-      tips: [
-        "Parfait pour scènes discrètes.",
-        "Visibilité réduite.",
-        "RP tension conseillé."
-      ],
+      texts: ["Un brouillard dense apparaît.", "Visibilité réduite.", "Ambiance mystérieuse."],
+      tips: ["RP tension.", "Déplacements prudents.", "Parfait pour scènes discrètes."],
       img: "./images/brouillard.jpg",
       color: "#95A5A6"
     }
   },
   soir: {
     soleil: {
-      texts: [
-        "La nuit est claire et paisible.",
-        "Le ciel est dégagé ce soir.",
-        "Ambiance nocturne calme."
-      ],
-      tips: [
-        "Sorties RP nocturnes idéales.",
-        "Parfait pour scènes calmes.",
-        "Profitez de la nuit."
-      ],
+      texts: ["Nuit claire.", "Ciel dégagé.", "Ambiance calme."],
+      tips: ["RP nocturne.", "Sorties idéales.", "Ambiance paisible."],
       img: "./images/nuit-soleil.jpg",
       color: "#2C3E50"
     },
     pluie: {
-      texts: [
-        "La pluie tombe sous les lumières.",
-        "Une pluie nocturne s’installe.",
-        "Ambiance sombre et immersive."
-      ],
-      tips: [
-        "Scènes dramatiques idéales.",
-        "Rues désertes.",
-        "RP immersif."
-      ],
+      texts: ["Pluie nocturne.", "Ambiance sombre.", "Ville humide."],
+      tips: ["RP dramatique.", "Rues désertes.", "Immersion ++"],
       img: "./images/nuit-pluie.jpg",
       color: "#34495E"
     }
@@ -105,7 +65,18 @@ const weatherData = {
 };
 
 
-// 📺 EMBED MISS MÉTÉO
+// 🌴 SAISONS
+function getSeason() {
+  const month = new Date().getMonth() + 1;
+
+  if ([12, 1, 2].includes(month)) return "hiver";
+  if ([3, 4, 5].includes(month)) return "printemps";
+  if ([6, 7, 8].includes(month)) return "ete";
+  if ([9, 10, 11].includes(month)) return "automne";
+}
+
+
+// 📺 EMBED
 function createEmbed(data) {
   const weatherFile = new AttachmentBuilder(data.img);
   const lunaFile = new AttachmentBuilder("./images/luna.png");
@@ -115,31 +86,24 @@ function createEmbed(data) {
 
   const embed = new EmbedBuilder()
     .setTitle("🌴📺 MISS MÉTÉO — SAN EUPHORIA")
-    .setDescription(
-      `👩 Ici **Luna Reyes**, en direct de San Euphoria.\n\n${text}\n\n💡 **Conseil RP :** ${tip}`
-    )
+    .setDescription(`👩 Ici **Luna Reyes**.\n\n${text}\n\n💡 Conseil RP : ${tip}`)
     .setColor(data.color)
     .setThumbnail("attachment://luna.png")
     .setImage(`attachment://${data.img.split('/').pop()}`)
-    .setFooter({ text: "San Euphoria Weather System" })
     .setTimestamp();
 
-  return {
-    embed,
-    files: [weatherFile, lunaFile]
-  };
+  return { embed, files: [weatherFile, lunaFile] };
 }
 
 
-// 📦 COMMANDES (FIX ICI 🔥)
+// 📦 COMMANDES
 const commands = [
   new SlashCommandBuilder()
     .setName('forcemeteo')
-    .setDescription('Forcer la météo avec Luna Reyes')
+    .setDescription('Forcer la météo')
     .addStringOption(opt =>
-      opt
-        .setName('moment')
-        .setDescription('Choisir le moment (jour ou soir)')
+      opt.setName('moment')
+        .setDescription('jour ou soir')
         .setRequired(true)
         .addChoices(
           { name: 'Jour', value: 'jour' },
@@ -147,9 +111,8 @@ const commands = [
         )
     )
     .addStringOption(opt =>
-      opt
-        .setName('type')
-        .setDescription('Choisir le type de météo')
+      opt.setName('type')
+        .setDescription('type météo')
         .setRequired(true)
         .addChoices(
           { name: 'Soleil', value: 'soleil' },
@@ -160,7 +123,7 @@ const commands = [
 ].map(c => c.toJSON());
 
 
-// 🚀 ENREGISTREMENT COMMANDES
+// 🚀 REGISTER
 const rest = new REST({ version: '10' }).setToken(TOKEN);
 
 (async () => {
@@ -168,7 +131,6 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
     Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
     { body: commands }
   );
-  console.log("✅ Commandes enregistrées");
 })();
 
 
@@ -189,12 +151,27 @@ async function startWeatherLoop() {
   async function sendWeather() {
     const hour = getFrenchHour();
     const moment = (hour >= 6 && hour < 21) ? "jour" : "soir";
+    const season = getSeason();
 
-    const pool = weatherData[moment];
-    const keys = Object.keys(pool);
-    const random = keys[Math.floor(Math.random() * keys.length)];
+    let weighted = [];
 
-    const weather = pool[random];
+    if (moment === "jour") {
+      if (season === "ete") weighted = ["soleil", "soleil", "soleil", "pluie"];
+      if (season === "automne") weighted = ["pluie", "pluie", "brouillard", "soleil"];
+      if (season === "hiver") weighted = ["pluie", "pluie", "soleil"];
+      if (season === "printemps") weighted = ["soleil", "pluie", "brouillard"];
+    }
+
+    if (moment === "soir") {
+      if (season === "ete") weighted = ["soleil", "soleil", "pluie"];
+      if (season === "automne") weighted = ["pluie", "pluie", "soleil"];
+      if (season === "hiver") weighted = ["pluie", "pluie", "soleil"];
+      if (season === "printemps") weighted = ["soleil", "pluie"];
+    }
+
+    const random = weighted[Math.floor(Math.random() * weighted.length)];
+    const weather = weatherData[moment][random];
+
     const { embed, files } = createEmbed(weather);
 
     await channel.send({ embeds: [embed], files });
@@ -207,14 +184,14 @@ async function startWeatherLoop() {
 }
 
 
-// ⚙️ COMMANDES ADMIN
+// ⚙️ ADMIN
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === 'forcemeteo') {
 
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-      return interaction.reply({ content: "❌ Réservé aux admins.", ephemeral: true });
+      return interaction.reply({ content: "❌ Admin seulement", ephemeral: true });
     }
 
     const moment = interaction.options.getString('moment');
@@ -225,7 +202,7 @@ client.on('interactionCreate', async interaction => {
     const channel = await client.channels.fetch(CHANNEL_ID);
     await channel.send({ embeds: [embed], files });
 
-    return interaction.reply({ content: "✅ Météo envoyée.", ephemeral: true });
+    return interaction.reply({ content: "✅ Envoyé", ephemeral: true });
   }
 });
 
