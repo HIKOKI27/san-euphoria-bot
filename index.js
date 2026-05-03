@@ -131,13 +131,15 @@ function createEmbed(data) {
 }
 
 
-// 📦 COMMANDES
+// 📦 COMMANDES (FIX ICI 🔥)
 const commands = [
   new SlashCommandBuilder()
     .setName('forcemeteo')
-    .setDescription('Forcer la météo (admin)')
+    .setDescription('Forcer la météo avec Luna Reyes')
     .addStringOption(opt =>
-      opt.setName('moment')
+      opt
+        .setName('moment')
+        .setDescription('Choisir le moment (jour ou soir)')
         .setRequired(true)
         .addChoices(
           { name: 'Jour', value: 'jour' },
@@ -145,7 +147,9 @@ const commands = [
         )
     )
     .addStringOption(opt =>
-      opt.setName('type')
+      opt
+        .setName('type')
+        .setDescription('Choisir le type de météo')
         .setRequired(true)
         .addChoices(
           { name: 'Soleil', value: 'soleil' },
@@ -216,16 +220,12 @@ client.on('interactionCreate', async interaction => {
     const moment = interaction.options.getString('moment');
     const type = interaction.options.getString('type');
 
-    if (!weatherData[moment][type]) {
-      return interaction.reply("❌ Météo invalide.");
-    }
-
     const { embed, files } = createEmbed(weatherData[moment][type]);
 
     const channel = await client.channels.fetch(CHANNEL_ID);
     await channel.send({ embeds: [embed], files });
 
-    return interaction.reply({ content: "✅ Météo forcée envoyée.", ephemeral: true });
+    return interaction.reply({ content: "✅ Météo envoyée.", ephemeral: true });
   }
 });
 
