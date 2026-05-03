@@ -16,41 +16,24 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
 const CHANNEL_ID = process.env.CHANNEL_ID;
 
+if (!TOKEN || !CLIENT_ID || !GUILD_ID || !CHANNEL_ID) {
+  console.error("❌ Variables manquantes : TOKEN, CLIENT_ID, GUILD_ID ou CHANNEL_ID");
+  process.exit(1);
+}
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-if (!TOKEN || !CLIENT_ID || !GUILD_ID || !CHANNEL_ID) {
-  console.error("❌ Variables manquantes dans Railway : TOKEN, CLIENT_ID, GUILD_ID ou CHANNEL_ID");
-  process.exit(1);
-}
-
 const SEASONS = {
-  hiver: {
-    label: "❄️ Hiver",
-    sunrise: "08:00",
-    sunset: "17:30"
-  },
-  printemps: {
-    label: "🌸 Printemps",
-    sunrise: "06:30",
-    sunset: "20:00"
-  },
-  ete: {
-    label: "☀️ Été",
-    sunrise: "06:00",
-    sunset: "21:00"
-  },
-  automne: {
-    label: "🍂 Automne",
-    sunrise: "07:00",
-    sunset: "18:30"
-  }
+  hiver: { label: "❄️ Hiver", sunrise: "08:00", sunset: "17:30" },
+  printemps: { label: "🌸 Printemps", sunrise: "06:30", sunset: "20:00" },
+  ete: { label: "☀️ Été", sunrise: "06:00", sunset: "21:00" },
+  automne: { label: "🍂 Automne", sunrise: "07:00", sunset: "18:30" }
 };
 
 function getSeason() {
   const month = new Date().getMonth() + 1;
-
   if ([12, 1, 2].includes(month)) return "hiver";
   if ([3, 4, 5].includes(month)) return "printemps";
   if ([6, 7, 8].includes(month)) return "ete";
@@ -74,7 +57,6 @@ function getFranceMinutes() {
 function getPeriod() {
   const season = getSeason();
   const now = getFranceMinutes();
-
   const sunrise = timeToMinutes(SEASONS[season].sunrise);
   const sunset = timeToMinutes(SEASONS[season].sunset);
 
@@ -82,7 +64,6 @@ function getPeriod() {
   if (now >= sunrise + 30 && now < 12 * 60) return "matin";
   if (now >= 12 * 60 && now < sunset - 30) return "jour";
   if (now >= sunset - 30 && now < sunset + 30) return "coucher";
-
   return "nuit";
 }
 
@@ -91,23 +72,97 @@ function randomImage(period, weather) {
   return `./images/${period}/${weather}${n}.jpg`;
 }
 
+function randomTemp(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getTemperature(season, weather, period) {
+  if (period === "nuit") {
+    if (season === "ete") return randomTemp(18, 26);
+    if (season === "printemps") return randomTemp(12, 18);
+    if (season === "automne") return randomTemp(10, 17);
+    return randomTemp(7, 14);
+  }
+
+  const ranges = {
+    ete: {
+      soleil: [26, 40],
+      gris: [22, 30],
+      pluie: [20, 26],
+      brouillard: [19, 25],
+      clair: [18, 26]
+    },
+    printemps: {
+      soleil: [17, 24],
+      gris: [14, 20],
+      pluie: [12, 18],
+      brouillard: [11, 17],
+      clair: [12, 18]
+    },
+    automne: {
+      soleil: [15, 23],
+      gris: [12, 18],
+      pluie: [10, 16],
+      brouillard: [9, 15],
+      clair: [10, 17]
+    },
+    hiver: {
+      soleil: [10, 18],
+      gris: [9, 15],
+      pluie: [8, 14],
+      brouillard: [7, 13],
+      clair: [7, 14]
+    }
+  };
+
+  const [min, max] = ranges[season][weather] || [15, 22];
+  return randomTemp(min, max);
+}
+
+function getClothingAdvice(season, weather, period, temp) {
+  if (temp >= 35) {
+    return "Hydrate-toi régulièrement, reste à l’ombre autant que possible et évite les efforts en plein soleil.";
+  }
+
+  if (weather === "soleil") {
+    if (season === "ete") return "Prévois une tenue légère, de l’eau et évite les heures les plus chaudes.";
+    return "Une tenue légère suffit, mais garde une veste fine si tu restes dehors longtemps.";
+  }
+
+  if (weather === "gris") {
+    return "Un léger pull ou une veste fine peut être utile, surtout près de la côte.";
+  }
+
+  if (weather === "pluie") {
+    return "Prends un imperméable ou un parapluie, les routes peuvent devenir glissantes.";
+  }
+
+  if (weather === "brouillard") {
+    return "Le brouillard matinal peut être frais et humide, couvre-toi légèrement.";
+  }
+
+  if (weather === "clair" || period === "nuit") {
+    return "Les températures baissent la nuit, une veste est recommandée.";
+  }
+
+  return "Habille-toi selon la température et reste attentif aux conditions.";
+}
+
 const weatherTexts = {
   soleil: {
-    title: "Temps ensoleillé",
     texts: [
-      "Le ciel est dégagé et la lumière baigne San Euphoria.",
-      "Une belle clarté s’installe sur la ville, offrant une ambiance agréable.",
-      "Le soleil domine la météo du moment sur San Euphoria."
+      "Le soleil domine San Euphoria et illumine les rues.",
+      "La ville profite d’une météo claire et lumineuse.",
+      "Une belle clarté s’installe sur toute la côte de San Euphoria."
     ],
     tips: [
       "Parfait pour vos scènes en extérieur.",
-      "Idéal pour les déplacements et événements RP.",
-      "Profitez d’une ambiance lumineuse en ville."
+      "Idéal pour les déplacements et événements en ville.",
+      "Profitez d’une ambiance lumineuse sur San Euphoria."
     ],
     color: "#FFD700"
   },
   gris: {
-    title: "Ciel grisâtre",
     texts: [
       "Un ciel gris recouvre San Euphoria, donnant une ambiance plus calme.",
       "La lumière se fait plus douce sous une couverture nuageuse.",
@@ -115,13 +170,12 @@ const weatherTexts = {
     ],
     tips: [
       "Parfait pour des scènes urbaines plus réalistes.",
-      "Ambiance idéale pour un RP calme.",
+      "Ambiance idéale pour un moment plus calme.",
       "Le ciel couvert donne un ton plus sérieux à la ville."
     ],
     color: "#7F8C8D"
   },
   pluie: {
-    title: "Pluie sur la ville",
     texts: [
       "La pluie s’installe sur San Euphoria et rafraîchit les rues.",
       "Les routes deviennent humides sous une pluie régulière.",
@@ -130,12 +184,11 @@ const weatherTexts = {
     tips: [
       "Adaptez vos scènes aux routes glissantes.",
       "Parfait pour des scènes dramatiques ou calmes.",
-      "Pensez à ralentir vos déplacements RP."
+      "Pensez à ralentir vos déplacements."
     ],
     color: "#4A90E2"
   },
   brouillard: {
-    title: "Brouillard matinal",
     texts: [
       "Un brouillard dense recouvre doucement San Euphoria.",
       "La visibilité baisse fortement dans les rues de la ville.",
@@ -149,7 +202,6 @@ const weatherTexts = {
     color: "#95A5A6"
   },
   clair: {
-    title: "Nuit claire",
     texts: [
       "La nuit est calme et le ciel reste dégagé sur San Euphoria.",
       "Les lumières de la ville prennent le relais sous un ciel paisible.",
@@ -157,7 +209,7 @@ const weatherTexts = {
     ],
     tips: [
       "Parfait pour des scènes nocturnes tranquilles.",
-      "Idéal pour des sorties RP en ville.",
+      "Idéal pour des sorties en ville.",
       "Profitez d’une nuit calme et élégante."
     ],
     color: "#2C3E50"
@@ -165,9 +217,7 @@ const weatherTexts = {
 };
 
 function getWeightedWeather(period, season) {
-  if (period === "lever") {
-    return ["soleil", "soleil", "gris", "pluie"];
-  }
+  if (period === "lever") return ["soleil", "soleil", "gris", "pluie"];
 
   if (period === "matin") {
     if (season === "ete") return ["soleil", "soleil", "soleil", "gris", "pluie"];
@@ -183,9 +233,7 @@ function getWeightedWeather(period, season) {
     return ["soleil", "gris", "pluie"];
   }
 
-  if (period === "coucher") {
-    return ["soleil", "soleil", "gris", "pluie"];
-  }
+  if (period === "coucher") return ["soleil", "soleil", "gris", "pluie"];
 
   return ["clair", "clair", "gris", "pluie"];
 }
@@ -194,6 +242,9 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
   const season = getSeason();
   const seasonLabel = SEASONS[season].label;
   const data = weatherTexts[weatherKey];
+
+  const temp = getTemperature(season, weatherKey, period);
+  const clothingAdvice = getClothingAdvice(season, weatherKey, period, temp);
 
   const imgPath = randomImage(period, weatherKey);
   const weatherFile = new AttachmentBuilder(imgPath);
@@ -210,13 +261,19 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
     nuit: "🌙 Nuit"
   };
 
+  const heatAlert = temp >= 35
+    ? "\n\n🔥 **Alerte chaleur :** forte chaleur sur San Euphoria, pensez à boire de l’eau régulièrement."
+    : "";
+
   const embed = new EmbedBuilder()
     .setTitle(specialTitle || "🌴📺 MISS MÉTÉO — SAN EUPHORIA")
     .setDescription(
       `👩 Ici **Luna Reyes**, en direct de San Euphoria.\n\n` +
       `📅 **Saison :** ${seasonLabel}\n` +
-      `🕒 **Période :** ${periodLabels[period]}\n\n` +
+      `🕒 **Période :** ${periodLabels[period]}\n` +
+      `🌡️ **Température :** ${temp}°C\n\n` +
       `${text}\n\n` +
+      `👕 **Conseil :** ${clothingAdvice}${heatAlert}\n\n` +
       `💡 **Conseil RP :** ${tip}`
     )
     .setColor(data.color)
@@ -225,10 +282,7 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
     .setFooter({ text: "San Euphoria Weather System" })
     .setTimestamp();
 
-  return {
-    embed,
-    files: [weatherFile, lunaFile]
-  };
+  return { embed, files: [weatherFile, lunaFile] };
 }
 
 const commands = [
@@ -367,7 +421,6 @@ client.once('ready', () => {
   console.log(`🤖 Connecté en ${client.user.tag}`);
 
   sendAutoWeather();
-
   setInterval(checkSunAnnouncements, 60 * 1000);
 });
 
