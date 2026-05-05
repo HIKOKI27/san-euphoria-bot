@@ -22,7 +22,35 @@ if (!TOKEN || !CLIENT_ID || !GUILD_ID || !CHANNEL_ID) {
 }
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
+});
+
+// 🎭 AUTO RÔLES À L’ARRIVÉE
+client.on('guildMemberAdd', async member => {
+  try {
+    const roles = [
+      "1259638063324201141",
+      "1259628698034770012",
+      "1260616730766475294",
+      "1259605120862392341",
+      "1259627935804162090",
+      "1259621183502942359",
+      "1259627851766960212",
+      "1291306988197777439",
+      "1293174726365024287"
+    ];
+
+    for (const roleId of roles) {
+      await member.roles.add(roleId);
+    }
+
+    console.log(`✅ Rôles ajoutés à ${member.user.tag}`);
+  } catch (error) {
+    console.error("❌ Erreur ajout rôles :", error);
+  }
 });
 
 const SEASONS = {
