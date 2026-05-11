@@ -53,6 +53,7 @@ client.on('guildMemberAdd', async member => {
   }
 });
 
+// 🌴 SAISONS
 const SEASONS = {
   hiver: { label: "❄️ Hiver", sunrise: "08:00", sunset: "17:30" },
   printemps: { label: "🌸 Printemps", sunrise: "06:30", sunset: "20:00" },
@@ -62,6 +63,7 @@ const SEASONS = {
 
 function getSeason() {
   const month = new Date().getMonth() + 1;
+
   if ([12, 1, 2].includes(month)) return "hiver";
   if ([3, 4, 5].includes(month)) return "printemps";
   if ([6, 7, 8].includes(month)) return "ete";
@@ -85,6 +87,7 @@ function getFranceMinutes() {
 function getPeriod() {
   const season = getSeason();
   const now = getFranceMinutes();
+
   const sunrise = timeToMinutes(SEASONS[season].sunrise);
   const sunset = timeToMinutes(SEASONS[season].sunset);
 
@@ -92,6 +95,7 @@ function getPeriod() {
   if (now >= sunrise + 30 && now < 12 * 60) return "matin";
   if (now >= 12 * 60 && now < sunset - 30) return "jour";
   if (now >= sunset - 30 && now < sunset + 30) return "coucher";
+
   return "nuit";
 }
 
@@ -176,73 +180,312 @@ function getClothingAdvice(season, weather, period, temp) {
   return "Habille-toi selon la température et reste attentif aux conditions.";
 }
 
+// 🌦️ TEXTES MÉTÉO
 const weatherTexts = {
   soleil: {
+    label: "☀️ Soleil",
     texts: [
       "Le soleil domine San Euphoria et illumine les rues.",
       "La ville profite d’une météo claire et lumineuse.",
       "Une belle clarté s’installe sur toute la côte de San Euphoria."
     ],
-    tips: [
-      "Parfait pour vos scènes en extérieur.",
-      "Idéal pour les déplacements et événements en ville.",
-      "Profitez d’une ambiance lumineuse sur San Euphoria."
-    ],
     color: "#FFD700"
   },
   gris: {
+    label: "🌥️ Ciel gris",
     texts: [
       "Un ciel gris recouvre San Euphoria, donnant une ambiance plus calme.",
       "La lumière se fait plus douce sous une couverture nuageuse.",
       "L’atmosphère devient plus posée avec ce temps couvert."
     ],
-    tips: [
-      "Parfait pour des scènes urbaines plus réalistes.",
-      "Ambiance idéale pour un moment plus calme.",
-      "Le ciel couvert donne un ton plus sérieux à la ville."
-    ],
     color: "#7F8C8D"
   },
   pluie: {
+    label: "🌧️ Pluie",
     texts: [
       "La pluie s’installe sur San Euphoria et rafraîchit les rues.",
       "Les routes deviennent humides sous une pluie régulière.",
       "Une ambiance plus sombre accompagne cette météo pluvieuse."
     ],
-    tips: [
-      "Adaptez vos scènes aux routes glissantes.",
-      "Parfait pour des scènes dramatiques ou calmes.",
-      "Pensez à ralentir vos déplacements."
-    ],
     color: "#4A90E2"
   },
   brouillard: {
+    label: "🌫️ Brouillard",
     texts: [
       "Un brouillard dense recouvre doucement San Euphoria.",
       "La visibilité baisse fortement dans les rues de la ville.",
       "La brume matinale donne une ambiance mystérieuse."
     ],
-    tips: [
-      "Idéal pour des scènes discrètes ou tendues.",
-      "La visibilité est réduite, soyez prudents.",
-      "Parfait pour créer une ambiance mystérieuse."
-    ],
     color: "#95A5A6"
   },
   clair: {
+    label: "🌙 Nuit claire",
     texts: [
       "La nuit est calme et le ciel reste dégagé sur San Euphoria.",
       "Les lumières de la ville prennent le relais sous un ciel paisible.",
       "Une ambiance nocturne douce s’installe sur la ville."
     ],
-    tips: [
-      "Parfait pour des scènes nocturnes tranquilles.",
-      "Idéal pour des sorties en ville.",
-      "Profitez d’une nuit calme et élégante."
-    ],
     color: "#2C3E50"
   }
 };
+
+// 💡 CONSEILS RP LONGS
+const rpTips = {
+  lever: [
+    `La ville sort lentement du silence de la nuit pendant que les premières lumières apparaissent sur la côte.
+Les rues sont encore calmes, les commerces commencent à ouvrir et les habitants les plus matinaux reprennent leur routine.
+C’est un moment idéal pour lancer des scènes posées, discrètes ou liées au début d’une nouvelle journée.`,
+
+    `Les premiers rayons traversent San Euphoria et donnent à la ville une ambiance douce, presque fragile.
+Les quartiers résidentiels s’éveillent progressivement tandis que le centre reste encore relativement calme.
+Cette période se prête parfaitement aux scènes d’introduction, aux départs au travail ou aux rencontres inattendues.`,
+
+    `Le lever du soleil installe une atmosphère plus légère sur San Euphoria.
+Les plages commencent à accueillir les premiers promeneurs pendant que les grandes avenues restent encore peu fréquentées.
+C’est une bonne occasion de créer des scènes calmes avant que la ville ne devienne plus active.`,
+
+    `San Euphoria s’éveille peu à peu sous une lumière encore douce.
+Les cafés, commerces et services commencent à reprendre vie tandis que les rues gardent une certaine tranquillité.
+Ce moment est parfait pour des scènes quotidiennes, professionnelles ou familiales.`,
+
+    `La ville retrouve doucement son rythme après la nuit.
+Les premiers véhicules apparaissent sur les grands axes, mais l’ambiance reste encore loin de l’agitation de la journée.
+C’est une période idéale pour des interactions simples, réalistes et naturelles.`,
+
+    `Le soleil commence à se lever sur les hauteurs et les façades de San Euphoria.
+La lumière du matin donne une atmosphère agréable aux quartiers proches de la mer.
+Les scènes peuvent facilement tourner autour d’un réveil, d’un trajet matinal ou d’une ouverture de commerce.`,
+
+    `Les habitants les plus matinaux commencent déjà à occuper les rues.
+La ville garde une ambiance paisible, mais les premiers signes d’activité se font sentir.
+C’est un bon moment pour jouer des scènes discrètes, des retrouvailles ou des départs importants.`,
+
+    `San Euphoria prend lentement vie avec le lever du soleil.
+Le port, les routes et les zones commerciales commencent à s’activer sans encore être saturés.
+Une excellente période pour poser une ambiance de transition entre la nuit et la journée.`,
+
+    `La lumière matinale révèle progressivement les bâtiments, les plages et les grandes avenues.
+L’ambiance est encore douce, ce qui donne aux scènes un côté plus intime et réaliste.
+Idéal pour commencer une intrigue ou préparer un événement à venir.`,
+
+    `Le lever du soleil marque le début d’une nouvelle journée à San Euphoria.
+La ville semble encore hésiter entre calme nocturne et activité urbaine.
+C’est un moment parfait pour des scènes d’observation, de préparation ou de déplacement tranquille.`,
+
+    `Les premières heures du jour donnent une atmosphère particulière à San Euphoria.
+Les rues sont moins bruyantes, les lumières artificielles s’éteignent peu à peu et la ville reprend son souffle.
+Profitez de cette période pour des scènes plus lentes et immersives.`,
+
+    `Le jour se lève sur San Euphoria avec une ambiance douce et progressive.
+Les quartiers commencent à se remplir, mais la ville reste encore assez calme pour laisser place à des moments plus personnels.
+C’est une période parfaite pour installer une ambiance avant l’agitation de la journée.`
+  ],
+
+  matin: [
+    `La matinée installe un rythme plus clair dans les rues de San Euphoria.
+Les commerces ouvrent, les premiers rendez-vous commencent et la circulation augmente progressivement.
+C’est une période idéale pour jouer des scènes de travail, de trajet ou de rencontre en ville.`,
+
+    `La ville est maintenant réveillée, mais garde encore une énergie relativement calme.
+Les quartiers proches de la côte profitent souvent d’une ambiance fraîche et légèrement humide.
+Ce moment convient très bien aux scènes réalistes du quotidien ou aux débuts d’intrigue.`,
+
+    `Les rues de San Euphoria se remplissent doucement à mesure que la matinée avance.
+Les habitants sortent, les entreprises reprennent leur activité et les services publics s’organisent.
+C’est une bonne période pour des scènes administratives, professionnelles ou sociales.`,
+
+    `Le matin donne à San Euphoria une atmosphère équilibrée entre calme et activité.
+Les grandes avenues commencent à être fréquentées sans atteindre la densité de la journée.
+Idéal pour des interactions naturelles, des déplacements ou des rendez-vous discrets.`,
+
+    `La ville prend progressivement son rythme de croisière.
+Les cafés, restaurants et commerces commencent à accueillir plus de monde, tandis que les quartiers résidentiels se vident peu à peu.
+C’est un bon moment pour lancer des scènes liées à la vie quotidienne.`,
+
+    `La matinée apporte une ambiance réaliste et active à San Euphoria.
+Les véhicules circulent davantage, les piétons apparaissent dans les zones commerciales et les plages commencent à vivre.
+Ce moment peut servir de transition parfaite vers des scènes plus dynamiques.`,
+
+    `Les activités de la ville s’organisent autour des premières heures pleinement actives.
+La météo du matin peut influencer la circulation, l’ambiance des quartiers et les déplacements des habitants.
+C’est une excellente période pour créer du mouvement sans rendre la ville trop chaotique.`,
+
+    `San Euphoria conserve encore une certaine fraîcheur en matinée.
+Les scènes peuvent facilement s’ancrer dans un contexte réaliste : travail, préparation, rendez-vous ou déplacement.
+Cette période donne un ton crédible et naturel à vos interactions.`,
+
+    `La matinée est souvent le moment où les détails de la ville deviennent les plus visibles.
+Les rues s’animent, les services se mettent en place et les habitants commencent à occuper les lieux publics.
+Idéal pour des scènes posées mais vivantes.`,
+
+    `L’ambiance matinale permet d’installer des scènes calmes tout en gardant une ville active.
+Les personnages peuvent se croiser au travail, dans les rues, près du port ou autour des commerces.
+C’est un moment parfait pour faire avancer une intrigue sans pression excessive.`,
+
+    `San Euphoria respire pleinement en matinée.
+Les quartiers sont accessibles, les lieux publics commencent à se remplir et la ville semble prête à basculer vers une journée plus dense.
+Une bonne période pour préparer des événements ou introduire de nouveaux personnages.`,
+
+    `Le matin offre un équilibre intéressant entre tranquillité et mouvement.
+La ville n’est plus endormie, mais elle n’a pas encore atteint son pic d’activité.
+C’est une fenêtre idéale pour des scènes fluides, réalistes et immersives.`
+  ],
+
+  jour: [
+    `La journée bat son plein dans San Euphoria et l’activité se fait sentir dans tous les quartiers.
+Les plages, les commerces et les grands axes attirent davantage de monde, rendant la ville plus vivante.
+C’est une période idéale pour des scènes dynamiques, sociales ou liées aux événements publics.`,
+
+    `San Euphoria est pleinement active à cette heure de la journée.
+La circulation peut devenir plus dense, les lieux publics se remplissent et les interactions sont naturellement plus fréquentes.
+Profitez de cette ambiance pour créer des scènes animées et visibles.`,
+
+    `La ville montre son visage le plus vivant pendant la journée.
+Les entreprises fonctionnent, les habitants circulent et les quartiers centraux deviennent plus bruyants.
+C’est le moment parfait pour les scènes de travail, de commerce ou de confrontation publique.`,
+
+    `L’ambiance de journée donne beaucoup d’énergie aux scènes RP.
+Les personnages peuvent facilement se croiser dans les rues, les restaurants, les plages ou les zones commerciales.
+Cette période favorise les interactions spontanées et les situations imprévues.`,
+
+    `San Euphoria est en pleine activité, avec une atmosphère plus rapide et plus ouverte.
+Les scènes en extérieur prennent plus d’importance, surtout autour des lieux fréquentés.
+C’est une bonne occasion de jouer des rencontres, des déplacements ou des événements visibles.`,
+
+    `La journée rend la ville plus dense et plus exposée.
+Les actions entreprises à cette heure peuvent facilement attirer l’attention des passants, des autorités ou des autres personnages.
+Idéal pour des scènes publiques, officielles ou commerciales.`,
+
+    `Les rues principales de San Euphoria sont plus animées en journée.
+Les plages et terrasses peuvent devenir des points de rencontre naturels selon la météo.
+Cette période convient très bien aux scènes sociales, aux discussions importantes ou aux activités urbaines.`,
+
+    `La lumière de la journée met en valeur chaque quartier de San Euphoria.
+Les scènes peuvent être plus visibles, plus directes et plus dynamiques qu’en soirée ou la nuit.
+C’est un moment parfait pour donner du rythme au serveur.`,
+
+    `La ville fonctionne à plein régime et chaque quartier peut devenir un lieu d’interaction.
+Les déplacements sont plus nombreux, les commerces actifs et les lieux publics plus fréquentés.
+Cette période est idéale pour faire avancer plusieurs intrigues en parallèle.`,
+
+    `La journée permet de jouer une San Euphoria ouverte, vivante et en mouvement.
+Les personnages ont plus de raisons de sortir, travailler, négocier ou se retrouver.
+C’est un excellent créneau pour les scènes collectives.`,
+
+    `L’activité de la ville crée une ambiance réaliste et parfois imprévisible.
+Les conditions météo peuvent influencer les déplacements, la fréquentation des lieux et le ton général des scènes.
+Utilisez ce contexte pour rendre vos actions plus crédibles.`,
+
+    `San Euphoria est pleinement éveillée, avec tout ce que cela implique : bruit, mouvement, rencontres et opportunités.
+Les scènes peuvent naturellement devenir plus rapides, plus sociales ou plus tendues.
+C’est la période idéale pour donner de l’ampleur à vos actions.`
+  ],
+
+  coucher: [
+    `Le coucher du soleil donne à San Euphoria une ambiance plus chaude et plus cinématographique.
+Les lumières de la ville commencent à prendre le relais pendant que les rues changent progressivement de rythme.
+C’est un moment parfait pour des scènes marquantes, élégantes ou plus émotionnelles.`,
+
+    `La journée touche à sa fin et la ville entre doucement dans une atmosphère de transition.
+Les commerces ralentissent, les terrasses se remplissent et les quartiers nocturnes commencent à s’animer.
+C’est une période idéale pour préparer des scènes de soirée.`,
+
+    `Le coucher du soleil transforme l’ambiance de San Euphoria.
+La lumière devient plus douce, les rues changent de couleur et la ville semble plus calme malgré l’activité restante.
+Parfait pour des rencontres importantes ou des scènes plus posées.`,
+
+    `San Euphoria passe lentement de l’agitation de la journée à l’ambiance de la nuit.
+Les personnages peuvent profiter de cette transition pour se retrouver, discuter ou préparer la suite.
+C’est un moment très fort pour les scènes visuelles et émotionnelles.`,
+
+    `Les dernières lumières du jour donnent une atmosphère particulière à la ville.
+Les plages, les routes côtières et les quartiers lumineux deviennent des décors parfaits pour le RP.
+Cette période favorise les scènes calmes, tendues ou romantiques.`,
+
+    `Le coucher du soleil marque un changement de rythme dans San Euphoria.
+Les habitants rentrent, sortent ou se dirigent vers les zones plus animées de la ville.
+C’est une bonne période pour croiser différents personnages dans une ambiance naturelle.`,
+
+    `La ville commence à ralentir sans devenir silencieuse.
+Les éclairages publics s’allument progressivement et les lieux de sortie prennent de l’importance.
+Idéal pour lancer des scènes de soirée ou des intrigues plus discrètes.`,
+
+    `Le ciel se colore au-dessus de San Euphoria et donne une atmosphère très immersive.
+Les scènes à cette heure peuvent facilement prendre un ton plus important ou plus symbolique.
+C’est un bon moment pour les décisions, les retrouvailles ou les tensions.`,
+
+    `Le coucher du soleil donne à la ville une ambiance entre calme et attente.
+Certaines rues se vident tandis que d’autres commencent à s’animer.
+Cette transition crée un excellent contexte pour des scènes variées et crédibles.`,
+
+    `San Euphoria change de visage à mesure que le soleil descend.
+Les quartiers centraux, le port et les lieux de sortie deviennent plus attractifs.
+C’est une période idéale pour passer d’un RP quotidien à une ambiance plus nocturne.`,
+
+    `Les lumières de la ville commencent à se refléter sur les routes et les façades.
+La météo peut rendre cette période encore plus immersive, surtout avec un ciel couvert ou pluvieux.
+Utilisez cette ambiance pour renforcer le ton de vos scènes.`,
+
+    `Le coucher de soleil installe une atmosphère plus douce mais aussi plus mystérieuse.
+La ville semble se préparer à une nouvelle phase de la journée, plus calme ou plus intense selon les quartiers.
+C’est un excellent moment pour lancer une soirée RP.`
+  ],
+
+  nuit: [
+    `La nuit enveloppe San Euphoria et transforme complètement l’ambiance de la ville.
+Les rues se vident dans certains quartiers tandis que d’autres deviennent plus vivants et lumineux.
+C’est une période idéale pour des scènes discrètes, tendues ou plus intimes.`,
+
+    `San Euphoria prend une atmosphère plus calme une fois la nuit installée.
+Les lumières urbaines remplacent le soleil et les déplacements deviennent plus rares.
+Cette période convient très bien aux scènes confidentielles ou aux rencontres nocturnes.`,
+
+    `La ville semble plus mystérieuse durant la nuit.
+Les quartiers proches du centre restent actifs, tandis que les zones résidentielles deviennent plus silencieuses.
+C’est un bon moment pour développer des intrigues plus privées ou imprévues.`,
+
+    `La nuit apporte une ambiance plus lourde et plus cinématographique à San Euphoria.
+Les sons de la ville changent, les rues se font plus calmes et les lumières deviennent plus présentes.
+Idéal pour des scènes dramatiques, calmes ou secrètes.`,
+
+    `San Euphoria ne dort jamais complètement.
+Même si certains quartiers ralentissent, d’autres continuent de vivre sous les néons et les éclairages urbains.
+Cette période ouvre la porte à des scènes plus nocturnes, sociales ou risquées.`,
+
+    `L’ambiance nocturne permet de jouer une ville différente, plus silencieuse mais pas forcément vide.
+Les interactions prennent souvent un ton plus sérieux ou plus personnel.
+C’est une période parfaite pour des discussions importantes ou des événements discrets.`,
+
+    `Les rues de San Euphoria deviennent plus espacées et plus calmes à cette heure.
+Les déplacements peuvent sembler plus isolés, surtout selon la météo du moment.
+C’est un excellent contexte pour des scènes d’observation, de tension ou de transition.`,
+
+    `La nuit donne une autre dimension aux lieux familiers de San Euphoria.
+Un simple trajet, une rencontre ou une attente peuvent devenir beaucoup plus immersifs.
+Profitez de cette ambiance pour créer des scènes plus profondes.`,
+
+    `Les lumières des bâtiments, des routes et des quartiers animés dominent désormais la ville.
+L’atmosphère nocturne peut rendre les scènes plus élégantes, plus sombres ou plus imprévisibles.
+C’est une excellente période pour varier le ton du RP.`,
+
+    `San Euphoria ralentit, mais certaines zones gagnent en intensité.
+Les lieux de sortie, les quartiers d’affaires et les endroits isolés peuvent devenir des décors très différents.
+La nuit permet de créer une vraie diversité d’ambiance.`,
+
+    `La fraîcheur nocturne s’installe progressivement sur la ville.
+Les personnages peuvent adapter leurs déplacements, leurs tenues et leurs interactions à cette ambiance plus calme.
+C’est un moment idéal pour des scènes posées ou introspectives.`,
+
+    `La nuit recouvre San Euphoria d’une atmosphère plus silencieuse et plus urbaine.
+Les actions peuvent paraître plus importantes, car la ville semble moins distraite par l’agitation du jour.
+C’est une période parfaite pour les scènes à fort impact narratif.`
+  ]
+};
+
+function getRandomRpTip(period) {
+  const list = rpTips[period] || rpTips.jour;
+  return list[Math.floor(Math.random() * list.length)];
+}
 
 function getWeightedWeather(period, season) {
   if (period === "lever") return ["soleil", "soleil", "gris", "pluie"];
@@ -279,7 +522,7 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
   const lunaFile = new AttachmentBuilder("./images/luna.png");
 
   const text = data.texts[Math.floor(Math.random() * data.texts.length)];
-  const tip = data.tips[Math.floor(Math.random() * data.tips.length)];
+  const rpTip = getRandomRpTip(period);
 
   const periodLabels = {
     lever: "🌅 Lever du soleil",
@@ -299,10 +542,11 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
       `👩 Ici **Luna Reyes**, en direct de San Euphoria.\n\n` +
       `📅 **Saison :** ${seasonLabel}\n` +
       `🕒 **Période :** ${periodLabels[period]}\n` +
-      `🌡️ **Température :** ${temp}°C\n\n` +
+      `🌡️ **Température :** ${temp}°C\n` +
+      `🌦️ **Météo :** ${data.label}\n\n` +
       `${text}\n\n` +
       `👕 **Conseil :** ${clothingAdvice}${heatAlert}\n\n` +
-      `💡 **Conseil RP :** ${tip}`
+      `💡 **Conseil RP :**\n\n${rpTip}`
     )
     .setColor(data.color)
     .setThumbnail("attachment://luna.png")
