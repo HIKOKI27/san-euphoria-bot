@@ -721,7 +721,59 @@ function getWeightedWeather(period, season) {
 
   return ['clair', 'clair', 'gris', 'pluie'];
 }
+const weatherTexts = {
 
+  soleil: {
+    label: "☀️ Soleil",
+    texts: [
+      "Le soleil domine San Euphoria et illumine les rues.",
+      "La ville profite d’une météo claire et lumineuse.",
+      "Une belle clarté s’installe sur toute la côte de San Euphoria."
+    ],
+    color: "#FFD700"
+  },
+
+  gris: {
+    label: "🌥️ Ciel gris",
+    texts: [
+      "Un ciel gris recouvre San Euphoria, donnant une ambiance plus calme.",
+      "La lumière se fait plus douce sous une couverture nuageuse.",
+      "L’atmosphère devient plus posée avec ce temps couvert."
+    ],
+    color: "#7F8C8D"
+  },
+
+  pluie: {
+    label: "🌧️ Pluie",
+    texts: [
+      "La pluie s’installe sur San Euphoria et rafraîchit les rues.",
+      "Les routes deviennent humides sous une pluie régulière.",
+      "Une ambiance plus sombre accompagne cette météo pluvieuse."
+    ],
+    color: "#4A90E2"
+  },
+
+  brouillard: {
+    label: "🌫️ Brouillard",
+    texts: [
+      "Un brouillard dense recouvre doucement San Euphoria.",
+      "La visibilité baisse fortement dans les rues de la ville.",
+      "La brume matinale donne une ambiance mystérieuse."
+    ],
+    color: "#95A5A6"
+  },
+
+  clair: {
+    label: "🌙 Nuit claire",
+    texts: [
+      "La nuit est calme et le ciel reste dégagé sur San Euphoria.",
+      "Les lumières de la ville prennent le relais sous un ciel paisible.",
+      "Une ambiance nocturne douce s’installe sur la ville."
+    ],
+    color: "#2C3E50"
+  }
+
+};
 function createWeatherEmbed(period, weatherKey, specialTitle = null) {
   const season = getSeason();
   const seasonLabel = SEASONS[season].label;
