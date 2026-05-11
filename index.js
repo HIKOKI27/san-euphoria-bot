@@ -17,7 +17,7 @@ const GUILD_ID = process.env.GUILD_ID;
 const CHANNEL_ID = process.env.CHANNEL_ID;
 
 if (!TOKEN || !CLIENT_ID || !GUILD_ID || !CHANNEL_ID) {
-  console.error("❌ Variables manquantes : TOKEN, CLIENT_ID, GUILD_ID ou CHANNEL_ID");
+  console.error('❌ Variables manquantes : TOKEN, CLIENT_ID, GUILD_ID ou CHANNEL_ID');
   process.exit(1);
 }
 
@@ -32,15 +32,15 @@ const client = new Client({
 client.on('guildMemberAdd', async member => {
   try {
     const roles = [
-      "1259638063324201141",
-      "1259628698034770012",
-      "1260616730766475294",
-      "1259605120862392341",
-      "1259627935804162090",
-      "1259621183502942359",
-      "1259627851766960212",
-      "1291306988197777439",
-      "1293174726365024287"
+      '1259638063324201141',
+      '1259628698034770012',
+      '1260616730766475294',
+      '1259605120862392341',
+      '1259627935804162090',
+      '1259621183502942359',
+      '1259627851766960212',
+      '1291306988197777439',
+      '1293174726365024287'
     ];
 
     for (const roleId of roles) {
@@ -49,25 +49,25 @@ client.on('guildMemberAdd', async member => {
 
     console.log(`✅ Rôles ajoutés à ${member.user.tag}`);
   } catch (error) {
-    console.error("❌ Erreur ajout rôles :", error);
+    console.error('❌ Erreur ajout rôles :', error);
   }
 });
 
 // 🌴 SAISONS
 const SEASONS = {
-  hiver: { label: "❄️ Hiver", sunrise: "08:00", sunset: "17:30" },
-  printemps: { label: "🌸 Printemps", sunrise: "06:30", sunset: "20:00" },
-  ete: { label: "☀️ Été", sunrise: "06:00", sunset: "21:00" },
-  automne: { label: "🍂 Automne", sunrise: "07:00", sunset: "18:30" }
+  hiver: { label: '❄️ Hiver', sunrise: '08:00', sunset: '17:30' },
+  printemps: { label: '🌸 Printemps', sunrise: '06:30', sunset: '20:00' },
+  ete: { label: '☀️ Été', sunrise: '06:00', sunset: '21:00' },
+  automne: { label: '🍂 Automne', sunrise: '07:00', sunset: '18:30' }
 };
 
 function getSeason() {
   const month = new Date().getMonth() + 1;
 
-  if ([12, 1, 2].includes(month)) return "hiver";
-  if ([3, 4, 5].includes(month)) return "printemps";
-  if ([6, 7, 8].includes(month)) return "ete";
-  return "automne";
+  if ([12, 1, 2].includes(month)) return 'hiver';
+  if ([3, 4, 5].includes(month)) return 'printemps';
+  if ([6, 7, 8].includes(month)) return 'ete';
+  return 'automne';
 }
 
 function timeToMinutes(time) {
@@ -76,7 +76,7 @@ function timeToMinutes(time) {
 }
 
 function getFranceDate() {
-  return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
 }
 
 function getFranceMinutes() {
@@ -91,12 +91,12 @@ function getPeriod() {
   const sunrise = timeToMinutes(SEASONS[season].sunrise);
   const sunset = timeToMinutes(SEASONS[season].sunset);
 
-  if (now >= sunrise && now < sunrise + 30) return "lever";
-  if (now >= sunrise + 30 && now < 12 * 60) return "matin";
-  if (now >= 12 * 60 && now < sunset - 30) return "jour";
-  if (now >= sunset - 30 && now < sunset + 30) return "coucher";
+  if (now >= sunrise && now < sunrise + 30) return 'lever';
+  if (now >= sunrise + 30 && now < 12 * 60) return 'matin';
+  if (now >= 12 * 60 && now < sunset - 30) return 'jour';
+  if (now >= sunset - 30 && now < sunset + 30) return 'coucher';
 
-  return "nuit";
+  return 'nuit';
 }
 
 function randomImage(period, weather) {
@@ -109,10 +109,10 @@ function randomTemp(min, max) {
 }
 
 function getTemperature(season, weather, period) {
-  if (period === "nuit") {
-    if (season === "ete") return randomTemp(18, 26);
-    if (season === "printemps") return randomTemp(12, 18);
-    if (season === "automne") return randomTemp(10, 17);
+  if (period === 'nuit') {
+    if (season === 'ete') return randomTemp(18, 26);
+    if (season === 'printemps') return randomTemp(12, 18);
+    if (season === 'automne') return randomTemp(10, 17);
     return randomTemp(7, 14);
   }
 
@@ -151,83 +151,296 @@ function getTemperature(season, weather, period) {
   return randomTemp(min, max);
 }
 
-function getClothingAdvice(season, weather, period, temp) {
-  if (temp >= 35) {
-    return "Hydrate-toi régulièrement, reste à l’ombre autant que possible et évite les efforts en plein soleil.";
-  }
+// 👕 CONSEILS VESTIMENTAIRES LONGS — 3 par saison + météo
+const clothingAdvices = {
+  ete: {
+    soleil: [
+      `Les températures peuvent devenir particulièrement élevées sous le soleil de San Euphoria.
+Privilégie des vêtements légers, respirants et clairs pour mieux supporter la chaleur.
+Pense aussi à boire régulièrement de l’eau si tu restes longtemps dehors.`,
 
-  if (weather === "soleil") {
-    if (season === "ete") return "Prévois une tenue légère, de l’eau et évite les heures les plus chaudes.";
-    return "Une tenue légère suffit, mais garde une veste fine si tu restes dehors longtemps.";
-  }
+      `La chaleur estivale peut vite devenir lourde dans les quartiers très urbanisés.
+Une tenue légère est fortement recommandée, surtout aux heures les plus chaudes.
+Évite les vêtements épais et garde de l’eau avec toi lors de tes déplacements.`,
 
-  if (weather === "gris") {
-    return "Un léger pull ou une veste fine peut être utile, surtout près de la côte.";
-  }
-
-  if (weather === "pluie") {
-    return "Prends un imperméable ou un parapluie, les routes peuvent devenir glissantes.";
-  }
-
-  if (weather === "brouillard") {
-    return "Le brouillard matinal peut être frais et humide, couvre-toi légèrement.";
-  }
-
-  if (weather === "clair" || period === "nuit") {
-    return "Les températures baissent la nuit, une veste est recommandée.";
-  }
-
-  return "Habille-toi selon la température et reste attentif aux conditions.";
-}
-
-// 🌦️ TEXTES MÉTÉO
-const weatherTexts = {
-  soleil: {
-    label: "☀️ Soleil",
-    texts: [
-      "Le soleil domine San Euphoria et illumine les rues.",
-      "La ville profite d’une météo claire et lumineuse.",
-      "Une belle clarté s’installe sur toute la côte de San Euphoria."
+      `Le soleil reste très présent aujourd’hui et la température peut grimper rapidement.
+Des vêtements confortables, légers et adaptés à la chaleur seront les plus pratiques.
+Si tu passes du temps dehors, cherche l’ombre dès que possible et hydrate-toi souvent.`
     ],
-    color: "#FFD700"
+    gris: [
+      `Même avec un ciel couvert, l’air reste chaud sur San Euphoria en été.
+Une tenue légère reste adaptée, mais une veste fine peut être utile près de la côte.
+L’air marin peut rendre certains quartiers un peu plus frais par moments.`,
+
+      `Le ciel gris limite légèrement la chaleur directe, mais la température reste agréable.
+Privilégie des vêtements confortables et respirants pour rester à l’aise toute la journée.
+Une petite couche supplémentaire peut être utile en fin de journée ou près de l’océan.`,
+
+      `La couverture nuageuse donne une impression plus douce, mais l’été reste bien présent.
+Une tenue légère suffit généralement, surtout si tu circules dans les zones urbaines.
+Garde tout de même une veste fine si tu prévois de rester dehors tard.`
+    ],
+    pluie: [
+      `Les averses restent plutôt douces malgré la pluie estivale.
+Un imperméable léger ou une veste fine suffira pour éviter l’humidité prolongée.
+Attention aux routes et trottoirs qui peuvent devenir glissants rapidement.`,
+
+      `La pluie rafraîchit légèrement l’atmosphère, mais les températures restent confortables.
+Privilégie des vêtements simples avec une protection légère contre l’eau.
+Des chaussures adaptées peuvent être utiles si tu dois te déplacer longtemps.`,
+
+      `Même sous la pluie, San Euphoria garde une certaine douceur estivale.
+Un vêtement imperméable léger permettra de rester à l’aise sans avoir trop chaud.
+Les zones proches de la côte peuvent devenir plus humides et désagréables.`
+    ],
+    brouillard: [
+      `Le brouillard côtier apporte une sensation plus fraîche et humide ce matin.
+Une veste légère peut être utile, surtout dans les quartiers proches de l’océan.
+La visibilité réduite peut aussi rendre les déplacements plus délicats.`,
+
+      `La brume matinale donne une ambiance plus fraîche malgré la saison estivale.
+Des vêtements légers restent adaptés, mais une couche supplémentaire peut être appréciable.
+L’humidité ambiante peut rendre l’air plus lourd qu’à l’habitude.`,
+
+      `Le brouillard réduit légèrement la température ressentie dans certains secteurs.
+Une tenue confortable avec une veste légère reste idéale pour cette météo.
+Les conditions devraient progressivement s’améliorer au fil de la journée.`
+    ],
+    clair: [
+      `Même durant l’été, les nuits de San Euphoria peuvent devenir plus fraîches.
+Une veste légère ou un vêtement plus couvrant peut être utile en extérieur.
+Les zones proches de la côte ressentent souvent davantage l’air marin.`,
+
+      `La température baisse progressivement avec l’arrivée de la nuit.
+Une tenue légère reste suffisante, mais prévois un vêtement supplémentaire pour les longues sorties.
+L’ambiance reste agréable dans l’ensemble de la ville.`,
+
+      `La nuit apporte une fraîcheur plus marquée après la chaleur de la journée.
+Les déplacements nocturnes seront plus confortables avec une veste fine ou un pull léger.
+L’air marin peut accentuer cette sensation de fraîcheur.`
+    ]
   },
-  gris: {
-    label: "🌥️ Ciel gris",
-    texts: [
-      "Un ciel gris recouvre San Euphoria, donnant une ambiance plus calme.",
-      "La lumière se fait plus douce sous une couverture nuageuse.",
-      "L’atmosphère devient plus posée avec ce temps couvert."
+
+  printemps: {
+    soleil: [
+      `Le climat printanier offre une température agréable sur San Euphoria.
+Une tenue légère suffit largement pour profiter de la journée dans de bonnes conditions.
+Une veste fine reste utile si tu restes dehors jusqu’en soirée.`,
+
+      `Le soleil apporte une ambiance douce et confortable sur l’ensemble de la ville.
+Des vêtements respirants et simples sont adaptés pour les déplacements en extérieur.
+En début ou fin de journée, une couche légère peut tout de même être appréciable.`,
+
+      `Les températures restent modérées malgré un ciel bien dégagé.
+Une tenue printanière légère est idéale pour circuler en ville ou près de la côte.
+L’air reste globalement agréable, mais peut être plus frais dans les zones exposées au vent.`
     ],
-    color: "#7F8C8D"
+    gris: [
+      `Le ciel couvert apporte une atmosphère plus fraîche à San Euphoria.
+Une veste légère ou un pull confortable peut être utile durant les déplacements.
+L’air marin accentue parfois cette sensation de fraîcheur.`,
+
+      `Même si la météo reste calme, les températures sont plus douces sous les nuages.
+Des vêtements mi-saison seront les plus adaptés pour rester à l’aise.
+Les quartiers proches de la côte peuvent paraître plus humides.`,
+
+      `Le temps gris donne une ambiance tempérée et un peu plus fraîche à la ville.
+Une tenue confortable avec une couche légère supplémentaire est recommandée.
+Les conditions restent cependant agréables pour la plupart des activités.`
+    ],
+    pluie: [
+      `La pluie apporte une certaine fraîcheur sur San Euphoria aujourd’hui.
+Un manteau léger imperméable permettra de rester à l’aise malgré l’humidité.
+Attention aussi aux sols glissants dans certaines zones.`,
+
+      `Les averses rendent l’air plus frais et humide dans plusieurs quartiers.
+Des vêtements adaptés à la pluie ainsi qu’une veste légère sont conseillés.
+La circulation peut également devenir plus compliquée par endroits.`,
+
+      `Le temps pluvieux crée une ambiance plus fraîche que la normale ce printemps.
+Une tenue couvrante et confortable permettra de mieux supporter l’humidité.
+Prends également de quoi te protéger de la pluie lors des déplacements.`
+    ],
+    brouillard: [
+      `Le brouillard matinal apporte une fraîcheur humide sur San Euphoria.
+Une veste légère reste recommandée durant les premières heures de la journée.
+La visibilité peut également être réduite dans certaines zones.`,
+
+      `La brume côtière crée une ambiance plus fraîche et calme ce matin.
+Des vêtements confortables et légèrement couvrants permettront de rester à l’aise.
+Les températures devraient remonter progressivement plus tard.`,
+
+      `Le brouillard printanier réduit légèrement la température ressentie en ville.
+Une couche légère supplémentaire peut être appréciable lors des déplacements matinaux.
+Les conditions resteront relativement humides jusqu’à dissipation de la brume.`
+    ],
+    clair: [
+      `La nuit printanière reste relativement fraîche sur San Euphoria.
+Une veste légère ou un pull confortable peut être utile lors des sorties nocturnes.
+L’air marin accentue parfois cette sensation de fraîcheur.`,
+
+      `Les températures baissent progressivement avec l’arrivée de la nuit.
+Une tenue légèrement plus couvrante est recommandée pour rester confortable.
+L’ambiance générale reste cependant agréable dans la ville.`,
+
+      `Le ciel dégagé permet à la fraîcheur nocturne de s’installer progressivement.
+Prévois un vêtement plus chaud si tu comptes rester longtemps dehors.
+Les quartiers proches de la mer ressentent davantage cette baisse de température.`
+    ]
   },
-  pluie: {
-    label: "🌧️ Pluie",
-    texts: [
-      "La pluie s’installe sur San Euphoria et rafraîchit les rues.",
-      "Les routes deviennent humides sous une pluie régulière.",
-      "Une ambiance plus sombre accompagne cette météo pluvieuse."
+
+  automne: {
+    soleil: [
+      `Le soleil reste agréable, mais les températures d’automne sont plus modérées.
+Une tenue confortable avec une veste légère sera idéale pour la journée.
+En fin d’après-midi, l’air peut rapidement devenir plus frais.`,
+
+      `Même avec du soleil, San Euphoria garde une ambiance plus douce en automne.
+Privilégie des vêtements mi-saison pour rester à l’aise tout au long de la journée.
+Une couche supplémentaire peut être utile si tu restes dehors longtemps.`,
+
+      `Le temps lumineux rend la ville agréable, mais la fraîcheur automnale reste présente.
+Une veste fine ou un pull léger peut compléter une tenue simple.
+Les zones côtières peuvent être plus fraîches à cause du vent marin.`
     ],
-    color: "#4A90E2"
+    gris: [
+      `Le ciel gris renforce la sensation de fraîcheur sur San Euphoria.
+Une veste ou un pull confortable est recommandé pour les déplacements.
+L’humidité côtière peut rendre l’air plus frais qu’il n’y paraît.`,
+
+      `Avec ce temps couvert, une tenue mi-saison est clairement préférable.
+Prévois une couche supplémentaire si tu circules dans les quartiers exposés au vent.
+L’ambiance reste douce, mais moins chaude qu’en pleine journée ensoleillée.`,
+
+      `La couverture nuageuse donne une atmosphère plus fraîche et plus sérieuse à la ville.
+Des vêtements confortables et légèrement chauds seront les plus adaptés.
+Une veste fine peut suffire si tu ne restes pas longtemps dehors.`
+    ],
+    pluie: [
+      `La pluie automnale apporte une humidité plus marquée dans les rues de San Euphoria.
+Un imperméable ou une veste couvrante est fortement conseillé.
+Des chaussures adaptées éviteront l’inconfort sur les sols humides.`,
+
+      `Les averses rendent la ville plus fraîche et les routes plus glissantes.
+Privilégie une tenue protégée de l’eau, surtout si tu dois beaucoup te déplacer.
+Un parapluie peut être utile dans les zones très exposées.`,
+
+      `L’automne pluvieux donne une sensation plus froide qu’une simple baisse de température.
+Une veste imperméable et des vêtements confortables seront les meilleurs choix.
+Évite les tenues trop légères si tu dois rester dehors longtemps.`
+    ],
+    brouillard: [
+      `Le brouillard automnal peut rendre l’air particulièrement frais et humide.
+Une veste chaude ou un pull épais léger peut être utile en matinée.
+La visibilité réduite impose aussi de rester attentif lors des déplacements.`,
+
+      `La brume donne à San Euphoria une atmosphère plus froide et silencieuse.
+Des vêtements couvrants seront plus confortables, surtout près de la côte.
+L’humidité peut s’accrocher aux vêtements si tu restes longtemps dehors.`,
+
+      `Ce brouillard matinal renforce la fraîcheur typique de l’automne.
+Une tenue plus chaude qu’à l’habitude est recommandée pour rester à l’aise.
+Les conditions devraient s’améliorer progressivement si le temps se dégage.`
+    ],
+    clair: [
+      `La nuit d’automne devient rapidement fraîche sur San Euphoria.
+Une veste plus chaude ou un pull confortable est recommandé pour les sorties.
+L’air marin peut accentuer la sensation de froid dans certains quartiers.`,
+
+      `Même si le ciel est clair, les températures nocturnes baissent nettement.
+Prévois une tenue couvrante si tu comptes rester dehors longtemps.
+Les zones proches de l’océan peuvent être plus fraîches que le centre-ville.`,
+
+      `L’ambiance nocturne reste agréable mais demande une tenue plus chaude.
+Une veste ou un pull épais léger permettra de mieux supporter la fraîcheur.
+La ville peut sembler plus humide après la tombée de la nuit.`
+    ]
   },
-  brouillard: {
-    label: "🌫️ Brouillard",
-    texts: [
-      "Un brouillard dense recouvre doucement San Euphoria.",
-      "La visibilité baisse fortement dans les rues de la ville.",
-      "La brume matinale donne une ambiance mystérieuse."
+
+  hiver: {
+    soleil: [
+      `Le soleil apporte une ambiance agréable, mais les températures restent hivernales.
+Une veste légère à moyenne est recommandée pour rester confortable dehors.
+Les zones ombragées et proches de la côte peuvent rester fraîches.`,
+
+      `Même avec un ciel dégagé, l’air reste plus frais en hiver sur San Euphoria.
+Une tenue couvrante est préférable, surtout en matinée ou en fin de journée.
+Le soleil rend l’ambiance plus douce sans supprimer totalement la fraîcheur.`,
+
+      `Le temps ensoleillé donne une impression agréable, mais la saison reste fraîche.
+Prévois une veste ou un pull selon la durée de tes déplacements.
+La température peut baisser rapidement lorsque le soleil commence à descendre.`
     ],
-    color: "#95A5A6"
-  },
-  clair: {
-    label: "🌙 Nuit claire",
-    texts: [
-      "La nuit est calme et le ciel reste dégagé sur San Euphoria.",
-      "Les lumières de la ville prennent le relais sous un ciel paisible.",
-      "Une ambiance nocturne douce s’installe sur la ville."
+    gris: [
+      `Le ciel gris accentue la fraîcheur hivernale dans la ville.
+Une veste chaude ou un pull épais est conseillé pour les déplacements.
+L’humidité côtière peut rendre l’air plus froid qu’indiqué par la température.`,
+
+      `Avec ce temps couvert, San Euphoria prend une ambiance plus froide et calme.
+Privilégie des vêtements chauds et confortables pour rester à l’aise.
+Une couche supplémentaire peut être utile si tu restes longtemps dehors.`,
+
+      `La couverture nuageuse limite la chaleur du soleil et garde l’air frais.
+Une tenue hivernale légère mais couvrante sera le choix le plus adapté.
+Les zones proches de l’océan peuvent être plus humides et fraîches.`
     ],
-    color: "#2C3E50"
+    pluie: [
+      `La pluie hivernale rend les rues plus froides et plus humides.
+Un manteau imperméable ou une veste chaude résistante à l’eau est recommandé.
+Des chaussures adaptées seront utiles pour éviter l’inconfort sur les sols mouillés.`,
+
+      `Les averses accentuent la sensation de froid sur San Euphoria.
+Prévois une tenue chaude, couvrante et protégée de l’humidité.
+La circulation peut aussi devenir plus délicate sur les routes glissantes.`,
+
+      `Le temps pluvieux donne une ambiance hivernale plus lourde à la ville.
+Une veste chaude et imperméable permettra de mieux supporter les conditions.
+Évite les vêtements trop légers si tu dois rester dehors longtemps.`
+    ],
+    brouillard: [
+      `Le brouillard hivernal apporte une sensation froide et humide en matinée.
+Une veste chaude ou un manteau léger est conseillé pour rester confortable.
+La visibilité réduite impose aussi plus de prudence lors des déplacements.`,
+
+      `La brume froide donne à San Euphoria une atmosphère plus silencieuse et pesante.
+Privilégie des vêtements couvrants pour mieux supporter l’humidité.
+Les zones proches de la côte peuvent être particulièrement fraîches.`,
+
+      `Ce brouillard renforce nettement la fraîcheur ressentie dans la ville.
+Une tenue chaude et une couche supplémentaire seront appréciables en extérieur.
+Les conditions peuvent rester humides jusqu’à la fin de matinée.`
+    ],
+    clair: [
+      `Les nuits d’hiver sont fraîches sur San Euphoria, même sous un ciel dégagé.
+Une veste chaude ou un pull épais est recommandé pour les sorties prolongées.
+L’air marin peut rendre certains quartiers encore plus froids.`,
+
+      `Le ciel clair favorise une baisse nette des températures pendant la nuit.
+Prévois une tenue chaude si tu comptes circuler dehors longtemps.
+Les zones ouvertes et côtières ressentent davantage la fraîcheur nocturne.`,
+
+      `La nuit hivernale demande une tenue plus couvrante que le reste de la journée.
+Un manteau léger ou une veste chaude sera beaucoup plus confortable.
+L’ambiance reste calme, mais l’air peut être particulièrement frais.`
+    ]
   }
 };
+
+function getClothingAdvice(season, weather, period, temp) {
+  const seasonData = clothingAdvices[season] || clothingAdvices.printemps;
+  const weatherData = seasonData[weather] || seasonData.soleil;
+
+  let advice = weatherData[Math.floor(Math.random() * weatherData.length)];
+
+  if (temp >= 35) {
+    advice += `
+
+🔥 Une forte chaleur est actuellement présente sur San Euphoria.
+Évite les efforts physiques prolongés et pense à boire régulièrement de l’eau tout au long de la journée.`;
+  }
+
+  return advice;
+}
 
 // 💡 CONSEILS RP LONGS
 const rpTips = {
@@ -488,25 +701,25 @@ function getRandomRpTip(period) {
 }
 
 function getWeightedWeather(period, season) {
-  if (period === "lever") return ["soleil", "soleil", "gris", "pluie"];
+  if (period === 'lever') return ['soleil', 'soleil', 'gris', 'pluie'];
 
-  if (period === "matin") {
-    if (season === "ete") return ["soleil", "soleil", "soleil", "gris", "pluie"];
-    if (season === "automne") return ["gris", "pluie", "brouillard", "brouillard", "soleil"];
-    if (season === "hiver") return ["gris", "pluie", "brouillard", "soleil"];
-    return ["soleil", "gris", "pluie", "brouillard"];
+  if (period === 'matin') {
+    if (season === 'ete') return ['soleil', 'soleil', 'soleil', 'gris', 'pluie'];
+    if (season === 'automne') return ['gris', 'pluie', 'brouillard', 'brouillard', 'soleil'];
+    if (season === 'hiver') return ['gris', 'pluie', 'brouillard', 'soleil'];
+    return ['soleil', 'gris', 'pluie', 'brouillard'];
   }
 
-  if (period === "jour") {
-    if (season === "ete") return ["soleil", "soleil", "soleil", "gris", "pluie"];
-    if (season === "automne") return ["gris", "pluie", "pluie", "soleil"];
-    if (season === "hiver") return ["gris", "pluie", "soleil"];
-    return ["soleil", "gris", "pluie"];
+  if (period === 'jour') {
+    if (season === 'ete') return ['soleil', 'soleil', 'soleil', 'gris', 'pluie'];
+    if (season === 'automne') return ['gris', 'pluie', 'pluie', 'soleil'];
+    if (season === 'hiver') return ['gris', 'pluie', 'soleil'];
+    return ['soleil', 'gris', 'pluie'];
   }
 
-  if (period === "coucher") return ["soleil", "soleil", "gris", "pluie"];
+  if (period === 'coucher') return ['soleil', 'soleil', 'gris', 'pluie'];
 
-  return ["clair", "clair", "gris", "pluie"];
+  return ['clair', 'clair', 'gris', 'pluie'];
 }
 
 function createWeatherEmbed(period, weatherKey, specialTitle = null) {
@@ -519,25 +732,25 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
 
   const imgPath = randomImage(period, weatherKey);
   const weatherFile = new AttachmentBuilder(imgPath);
-  const lunaFile = new AttachmentBuilder("./images/luna.png");
+  const lunaFile = new AttachmentBuilder('./images/luna.png');
 
   const text = data.texts[Math.floor(Math.random() * data.texts.length)];
   const rpTip = getRandomRpTip(period);
 
   const periodLabels = {
-    lever: "🌅 Lever du soleil",
-    matin: "🌄 Matin",
-    jour: "☀️ Journée",
-    coucher: "🌇 Coucher du soleil",
-    nuit: "🌙 Nuit"
+    lever: '🌅 Lever du soleil',
+    matin: '🌄 Matin',
+    jour: '☀️ Journée',
+    coucher: '🌇 Coucher du soleil',
+    nuit: '🌙 Nuit'
   };
 
   const heatAlert = temp >= 35
-    ? "\n\n🔥 **Alerte chaleur :** forte chaleur sur San Euphoria, pensez à boire de l’eau régulièrement."
-    : "";
+    ? '\n\n🔥 **Alerte chaleur :** forte chaleur sur San Euphoria, pensez à boire de l’eau régulièrement.'
+    : '';
 
   const embed = new EmbedBuilder()
-    .setTitle(specialTitle || "🌴📺 MISS MÉTÉO — SAN EUPHORIA")
+    .setTitle(specialTitle || '🌴📺 MISS MÉTÉO — SAN EUPHORIA')
     .setDescription(
       `👩 Ici **Luna Reyes**, en direct de San Euphoria.\n\n` +
       `📅 **Saison :** ${seasonLabel}\n` +
@@ -545,13 +758,13 @@ function createWeatherEmbed(period, weatherKey, specialTitle = null) {
       `🌡️ **Température :** ${temp}°C\n` +
       `🌦️ **Météo :** ${data.label}\n\n` +
       `${text}\n\n` +
-      `👕 **Conseil :** ${clothingAdvice}${heatAlert}\n\n` +
+      `👕 **Conseil :**\n\n${clothingAdvice}${heatAlert}\n\n` +
       `💡 **Conseil RP :**\n\n${rpTip}`
     )
     .setColor(data.color)
-    .setThumbnail("attachment://luna.png")
+    .setThumbnail('attachment://luna.png')
     .setImage(`attachment://${imgPath.split('/').pop()}`)
-    .setFooter({ text: "San Euphoria Weather System" })
+    .setFooter({ text: 'San Euphoria Weather System' })
     .setTimestamp();
 
   return { embed, files: [weatherFile, lunaFile] };
@@ -595,7 +808,7 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
     { body: commands }
   );
 
-  console.log("✅ Commandes enregistrées");
+  console.log('✅ Commandes enregistrées');
 })();
 
 async function sendAutoWeather() {
@@ -621,7 +834,7 @@ async function checkSunAnnouncements() {
   const channel = await client.channels.fetch(CHANNEL_ID);
 
   const nowDate = getFranceDate();
-  const today = nowDate.toISOString().split("T")[0];
+  const today = nowDate.toISOString().split('T')[0];
 
   const season = getSeason();
   const now = getFranceMinutes();
@@ -633,9 +846,9 @@ async function checkSunAnnouncements() {
     lastSunriseAnnouncement = today;
 
     const { embed, files } = createWeatherEmbed(
-      "lever",
-      "soleil",
-      "🌅 LEVER DU SOLEIL — SAN EUPHORIA"
+      'lever',
+      'soleil',
+      '🌅 LEVER DU SOLEIL — SAN EUPHORIA'
     );
 
     await channel.send({ embeds: [embed], files });
@@ -645,9 +858,9 @@ async function checkSunAnnouncements() {
     lastSunsetAnnouncement = today;
 
     const { embed, files } = createWeatherEmbed(
-      "coucher",
-      "soleil",
-      "🌇 COUCHER DU SOLEIL — SAN EUPHORIA"
+      'coucher',
+      'soleil',
+      '🌇 COUCHER DU SOLEIL — SAN EUPHORIA'
     );
 
     await channel.send({ embeds: [embed], files });
@@ -660,7 +873,7 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'forcemeteo') {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return interaction.reply({
-        content: "❌ Commande réservée aux admins.",
+        content: '❌ Commande réservée aux admins.',
         ephemeral: true
       });
     }
@@ -672,7 +885,7 @@ client.on('interactionCreate', async interaction => {
 
     if (!allowed.includes(weatherKey)) {
       return interaction.reply({
-        content: "❌ Cette météo n’est pas disponible pour cette période.",
+        content: '❌ Cette météo n’est pas disponible pour cette période.',
         ephemeral: true
       });
     }
@@ -683,7 +896,7 @@ client.on('interactionCreate', async interaction => {
     await channel.send({ embeds: [embed], files });
 
     return interaction.reply({
-      content: "✅ Météo forcée envoyée.",
+      content: '✅ Météo forcée envoyée.',
       ephemeral: true
     });
   }
